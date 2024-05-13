@@ -1,51 +1,78 @@
-import React, { useState, useEffect } from "react";
+import React, {useEffect, useState} from "react";
 import {
-  TableBody,
-  TableContainer,
-  Table,
-  TableHeader,
-  TableCell,
-  TableRow,
-  TableFooter,
-  Avatar,
-  Badge,
-  Pagination,
+    Badge,
+    Button,
+    Pagination,
+    Table,
+    TableBody,
+    TableCell,
+    TableContainer,
+    TableFooter,
+    TableHeader,
+    TableRow,
 } from "@windmill/react-ui";
-import response from "../utils/demo/ordersData";
+import {useAuth} from "../context/AuthContext";
+import axiosClient from "../api";
+import User from "./User";
 
-const OrdersTable = ({ resultsPerPage, filter }) => {
+const OrdersTable = ({resultsPerPage, filter}) => {
+  const [toggle, setToggle] = useState(false);
   const [page, setPage] = useState(1);
   const [data, setData] = useState([]);
+  const {user} = useAuth();
+  useEffect(() => {
+    const fetchData = () => {
+      axiosClient.get(`/order?seller=${user}`).then((response) => {
+        setData(response);
+      });
+    };
+    fetchData();
+  }, [toggle]);
 
   // pagination setup
-  const totalResults = response.length;
+  const totalResults = data ? data.length : 0;
 
   // pagination change control
   function onPageChange(p) {
     setPage(p);
   }
 
+
   // on page change, load new sliced data
   // here you would make another server request for new data
   useEffect(() => {
     // If Filters Applied
-    if (filter === "paid") {
+    if (filter === "PENDING") {
       setData(
-        response
-          .filter((order) => order.status === "Paid")
+        data
+          .filter((order) => order.status === "PENDING")
           .slice((page - 1) * resultsPerPage, page * resultsPerPage)
       );
     }
-    if (filter === "un-paid") {
+    if (filter === "CONFIRMED") {
       setData(
-        response
-          .filter((order) => order.status === "Un-paid")
+        data
+          .filter((order) => order.status === "CONFIRMED")
           .slice((page - 1) * resultsPerPage, page * resultsPerPage)
       );
     }
-    if (filter === "completed") {
+    if (filter === "DELIVERING") {
       setData(
-        response
+        data
+          .filter((order) => order.status === "Completed")
+          .slice((page - 1) * resultsPerPage, page * resultsPerPage)
+      );
+    }
+    if (filter === "DELIVERED") {
+      setData(
+        data
+          .filter((order) => order.status === "Completed")
+          .slice((page - 1) * resultsPerPage, page * resultsPerPage)
+      );
+    }
+    if (filter === "CANCELLED") {
+      setData(
+        data
           .filter((order) => order.status === "Completed")
           .slice((page - 1) * resultsPerPage, page * resultsPerPage)
       );
@@ -54,11 +81,16 @@ const OrdersTable = ({ resultsPerPage, filter }) => {
     // if filters dosent applied
     if (filter === "all" || !filter) {
       setData(
-        response.slice((page - 1) * resultsPerPage, page * resultsPerPage)
+        data.slice((page - 1) * resultsPerPage, page * resultsPerPage)
       );
     }
   }, [page, resultsPerPage, filter]);
-
+  const handleConfirm = async (id) => {
+    await axiosClient.patch(`/order/${id}`, {
+      status: "CONFIRMED",
+    });
+    setToggle(!toggle);
+  }
   return (
     <div>
       {/* Table */}
@@ -67,55 +99,59 @@ const OrdersTable = ({ resultsPerPage, filter }) => {
           <TableHeader>
             <tr>
               <TableCell>Client</TableCell>
-              <TableCell>Order ID</TableCell>
-              <TableCell>Amount</TableCell>
+              <TableCell>Detail</TableCell>
+              <TableCell>Total</TableCell>
               <TableCell>Status</TableCell>
               <TableCell>Date</TableCell>
+              <TableCell>Action</TableCell>
             </tr>
           </TableHeader>
           <TableBody>
-            {data.map((user, i) => (
-              <TableRow key={i}>
+            {data.map((d, i) => {
+
+              return <TableRow key={i}>
                 <TableCell>
                   <div className="flex items-center text-sm">
-                    <Avatar
-                      className="hidden mr-3 md:block"
-                      src={user.avatar}
-                      alt="User image"
-                    />
                     <div>
-                      <p className="font-semibold">{user.name}</p>
+                      <User id={d.user}></User>
                     </div>
                   </div>
                 </TableCell>
                 <TableCell>
-                  <span className="text-sm">#000{i}</span>
+                                    <span className="text-sm">{
+                                      d.products.map((product, index) => (
+                                        <span key={index} className="font-semibold">
+                                                {product.product.name} x {product.quantity}
+                                            </span>
+                                      ))
+                                    }</span>
                 </TableCell>
                 <TableCell>
-                  <span className="text-sm">$ {user.amount}</span>
+                  <span className="text-sm">$ {d.total}</span>
                 </TableCell>
                 <TableCell>
                   <Badge
                     type={
-                      user.status === "Un-paid"
+                      d.status === "CANCELLED"
                         ? "danger"
-                        : user.status === "Paid"
-                        ? "success"
-                        : user.status === "Completed"
-                        ? "warning"
-                        : "neutral"
+                        : "success"
                     }
                   >
-                    {user.status}
+                    {d.status}
                   </Badge>
                 </TableCell>
                 <TableCell>
                   <span className="text-sm">
-                    {new Date(user.date).toLocaleDateString()}
+                    {new Date(d.createdAt).toLocaleDateString()}
                   </span>
                 </TableCell>
+                <TableCell>
+                  {d.status === "PENDING" ?
+                    <Button onClick={() => handleConfirm(d['_id'])}>Confirm</Button> :
+                    <Button disabled>Confirmed</Button>}
+                </TableCell>
               </TableRow>
-            ))}
+            })}
           </TableBody>
         </Table>
         <TableFooter>

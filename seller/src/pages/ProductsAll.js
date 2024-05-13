@@ -1,41 +1,36 @@
-import React, { useState, useEffect } from "react";
+import React, {useEffect, useState} from "react";
 import PageTitle from "../components/Typography/PageTitle";
-import { Link, NavLink } from "react-router-dom";
+import {Link, NavLink} from "react-router-dom";
 import {
-  EditIcon,
-  EyeIcon,
-  GridViewIcon,
-  HomeIcon,
-  ListViewIcon,
-  TrashIcon,
-} from "../icons";
-import {
-  Card,
-  CardBody,
-  Label,
-  Select,
-  Button,
-  TableBody,
-  TableContainer,
-  Table,
-  TableHeader,
-  TableCell,
-  TableRow,
-  TableFooter,
-  Avatar,
-  Badge,
-  Pagination,
-  Modal,
-  ModalHeader,
-  ModalBody,
-  ModalFooter,
+    Avatar,
+    Badge,
+    Button,
+    Card,
+    CardBody,
+    Label,
+    Modal,
+    ModalBody,
+    ModalFooter,
+    ModalHeader,
+    Pagination,
+    Select,
+    Table,
+    TableBody,
+    TableCell,
+    TableContainer,
+    TableFooter,
+    TableHeader,
+    TableRow,
 } from "@windmill/react-ui";
 import response from "../utils/demo/productData";
-import Icon from "../components/Icon";
-import { genRating } from "../utils/genarateRating";
+import {genRating} from "../utils/genarateRating";
+import {Bars4Icon, EyeIcon, HomeIcon, PencilIcon, Squares2X2Icon, TrashIcon} from "@heroicons/react/20/solid";
+import axiosClient from "../api";
+import {useAuth} from "../context/AuthContext";
 
 const ProductsAll = () => {
   const [view, setView] = useState("grid");
+  const {user} = useAuth();
 
   // Table and grid data handlling
   const [page, setPage] = useState(1);
@@ -53,12 +48,15 @@ const ProductsAll = () => {
   // on page change, load new sliced data
   // here you would make another server request for new data
   useEffect(() => {
-    setData(response.slice((page - 1) * resultsPerPage, page * resultsPerPage));
+    axiosClient.get(`product?owner=${user}`).then((response) => {
+      setData(response.slice((page - 1) * resultsPerPage, page * resultsPerPage));
+    });
   }, [page, resultsPerPage]);
 
   // Delete action model
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedDeleteProduct, setSelectedDeleteProduct] = useState(null);
+
   async function openModal(productId) {
     let product = await data.filter((product) => product.id === productId)[0];
     // console.log(product);
@@ -87,7 +85,7 @@ const ProductsAll = () => {
       {/* Breadcum */}
       <div className="flex text-gray-800 dark:text-gray-300">
         <div className="flex items-center text-purple-600">
-          <Icon className="w-5 h-5" aria-hidden="true" icon={HomeIcon} />
+          <HomeIcon className="h-5 w-5"/>
           <NavLink exact to="/app/dashboard" className="mx-2">
             Dashboard
           </NavLink>
@@ -113,25 +111,18 @@ const ProductsAll = () => {
                 </Select>
               </Label>
 
-              <Label className="mx-3">
-                <Select className="py-3">
-                  <option>Filter by Category</option>
-                  <option>Electronics</option>
-                  <option>Cloths</option>
-                  <option>Mobile Accerssories</option>
-                </Select>
-              </Label>
-
               <Label className="mr-8">
                 {/* <!-- focus-within sets the color for the icon when input is focused --> */}
-                <div className="relative text-gray-500 focus-within:text-purple-600 dark:focus-within:text-purple-400">
+                <div
+                  className="relative text-gray-500 focus-within:text-purple-600 dark:focus-within:text-purple-400">
                   <input
                     className="py-3 pr-5 text-sm text-black dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:focus:shadow-outline-gray form-input"
                     placeholder="Number of Results"
                     value={resultsPerPage}
                     onChange={(e) => setResultsPerPage(e.target.value)}
                   />
-                  <div className="absolute inset-y-0 right-0 flex items-center mr-3 pointer-events-none">
+                  <div
+                    className="absolute inset-y-0 right-0 flex items-center mr-3 pointer-events-none">
                     {/* <SearchIcon className="w-5 h-5" aria-hidden="true" /> */}
                     Results on {`${view}`}
                   </div>
@@ -140,7 +131,7 @@ const ProductsAll = () => {
             </div>
             <div className="">
               <Button
-                icon={view === "list" ? ListViewIcon : GridViewIcon}
+                icon={view === "list" ? Bars4Icon : Squares2X2Icon}
                 className="p-2"
                 aria-label="Edit"
                 onClick={handleChangeView}
@@ -154,7 +145,7 @@ const ProductsAll = () => {
       <Modal isOpen={isModalOpen} onClose={closeModal}>
         <ModalHeader className="flex items-center">
           {/* <div className="flex items-center"> */}
-          <Icon icon={TrashIcon} className="w-6 h-6 mr-3" />
+          <TrashIcon className="w-6 h-6 mr-3"/>
           Delete Product
           {/* </div> */}
         </ModalHeader>
@@ -197,21 +188,20 @@ const ProductsAll = () => {
               <TableHeader>
                 <tr>
                   <TableCell>Name</TableCell>
-                  <TableCell>Stock</TableCell>
                   <TableCell>Rating</TableCell>
-                  <TableCell>QTY</TableCell>
+                  <TableCell>QUANTITY</TableCell>
                   <TableCell>Price</TableCell>
                   <TableCell>Action</TableCell>
                 </tr>
               </TableHeader>
               <TableBody>
                 {data.map((product) => (
-                  <TableRow key={product.id}>
+                  <TableRow key={product._id}>
                     <TableCell>
                       <div className="flex items-center text-sm">
                         <Avatar
                           className="hidden mr-4 md:block"
-                          src={product.photo}
+                          src={product.image}
                           alt="Product image"
                         />
                         <div>
@@ -219,19 +209,14 @@ const ProductsAll = () => {
                         </div>
                       </div>
                     </TableCell>
-                    <TableCell>
-                      <Badge type={product.qty > 0 ? "success" : "danger"}>
-                        {product.qty > 0 ? "In Stock" : "Out of Stock"}
-                      </Badge>
-                    </TableCell>
                     <TableCell className="text-sm">
-                      {genRating(product.rating, product.reviews.length, 5)}
+                      {genRating(product.rating || 5, 0, 5)}
                     </TableCell>
-                    <TableCell className="text-sm">{product.qty}</TableCell>
+                    <TableCell className="text-sm">{product.quantity}</TableCell>
                     <TableCell className="text-sm">{product.price}</TableCell>
                     <TableCell>
                       <div className="flex">
-                        <Link to={`/app/product/${product.id}`}>
+                        <Link to={`/app/product/${product._id}`}>
                           <Button
                             icon={EyeIcon}
                             className="mr-3"
@@ -239,7 +224,7 @@ const ProductsAll = () => {
                           />
                         </Link>
                         <Button
-                          icon={EditIcon}
+                          icon={PencilIcon}
                           className="mr-3"
                           layout="outline"
                           aria-label="Edit"
@@ -247,7 +232,7 @@ const ProductsAll = () => {
                         <Button
                           icon={TrashIcon}
                           layout="outline"
-                          onClick={() => openModal(product.id)}
+                          onClick={() => openModal(product._id)}
                           aria-label="Delete"
                         />
                       </div>
@@ -268,71 +253,74 @@ const ProductsAll = () => {
         </>
       ) : (
         <>
-          {/* Car list */}
+          {/* Card list */}
           <div className="grid gap-4 grid-cols-2 md:grid-cols-3 lg:grid-cols-4 mb-8">
-            {data.map((product) => (
-              <div className="" key={product.id}>
-                <Card>
-                  <img
-                    className="object-cover w-full"
-                    src={product.photo}
-                    alt="product"
-                  />
-                  <CardBody>
-                    <div className="mb-3 flex items-center justify-between">
-                      <p className="font-semibold truncate  text-gray-600 dark:text-gray-300">
-                        {product.name}
-                      </p>
-                      <Badge
-                        type={product.qty > 0 ? "success" : "danger"}
-                        className="whitespace-nowrap"
-                      >
-                        <p className="break-normal">
-                          {product.qty > 0 ? `In Stock` : "Out of Stock"}
+            {data.map((product) => {
+              //console.log(product);
+              return (
+                <div className="flex" key={product._id}>
+                  <Card>
+                    <img
+                      className="object-cover w-full aspect-square"
+                      src={product.image}
+                      alt="product"
+                    />
+                    <CardBody>
+                      <div className="mb-3 flex items-center justify-between">
+                        <p className="font-semibold truncate  text-gray-600 dark:text-gray-300">
+                          {product.name}
                         </p>
-                      </Badge>
-                    </div>
+                        <Badge
+                          type={product.quantity > 0 ? "success" : "danger"}
+                          className="whitespace-nowrap"
+                        >
+                          <p className="break-normal">
+                            {product.quantity > 0 ? `In Stock` : "Out of Stock"}
+                          </p>
+                        </Badge>
+                      </div>
 
-                    <p className="mb-2 text-purple-500 font-bold text-lg">
-                      {product.price}
-                    </p>
+                      <p className="mb-2 text-purple-500 font-bold text-lg">
+                        {`$ ${product.price}`}
+                      </p>
 
-                    <p className="mb-8 text-gray-600 dark:text-gray-400">
-                      {product.shortDescription}
-                    </p>
+                      <p className="mb-8 flex flex-wrap h-[150px] text-gray-600 dark:text-gray-400">
+                        {product.description}
+                      </p>
 
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <Link to={`/app/product/${product.id}`}>
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <Link to={`/app/product/${product._id}`}>
+                            <Button
+                              icon={EyeIcon}
+                              className="mr-3"
+                              aria-label="Preview"
+                              size="small"
+                            />
+                          </Link>
+                        </div>
+                        <div>
                           <Button
-                            icon={EyeIcon}
+                            icon={PencilIcon}
                             className="mr-3"
-                            aria-label="Preview"
+                            layout="outline"
+                            aria-label="Edit"
                             size="small"
                           />
-                        </Link>
+                          <Button
+                            icon={TrashIcon}
+                            layout="outline"
+                            aria-label="Delete"
+                            onClick={() => openModal(product._id)}
+                            size="small"
+                          />
+                        </div>
                       </div>
-                      <div>
-                        <Button
-                          icon={EditIcon}
-                          className="mr-3"
-                          layout="outline"
-                          aria-label="Edit"
-                          size="small"
-                        />
-                        <Button
-                          icon={TrashIcon}
-                          layout="outline"
-                          aria-label="Delete"
-                          onClick={() => openModal(product.id)}
-                          size="small"
-                        />
-                      </div>
-                    </div>
-                  </CardBody>
-                </Card>
-              </div>
-            ))}
+                    </CardBody>
+                  </Card>
+                </div>
+              )
+            })}
           </div>
 
           <Pagination
