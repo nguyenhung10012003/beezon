@@ -1,6 +1,5 @@
 import {Prop, Schema, SchemaFactory} from "@nestjs/mongoose";
 import {Product, ProductSchema} from "./products.schema";
-import {User} from "./users.schema";
 import {SchemaTypes} from "mongoose";
 
 enum OrderStatus {
@@ -18,6 +17,12 @@ export class Order {
     type: [{product: ProductSchema, quantity: Number}]
   })
   products: { product: Product, quantity: number }[];
+  @Prop({
+    type: SchemaTypes.ObjectId,
+    required: true,
+    ref: 'User'
+  })
+  seller: string;
   @Prop({required: true, default: 0})
   total: number;
   @Prop({

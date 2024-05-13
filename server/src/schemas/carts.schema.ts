@@ -5,7 +5,7 @@ import {SchemaTypes} from "mongoose";
 export class Cart {
   @Prop({
     type: [{productId: SchemaTypes.ObjectId, quantity: Number}],
-    ref: 'Product'
+    ref: 'Product',
   })
   products: { productId: string, quantity: number }[];
   @Prop({required: true, default: 0})

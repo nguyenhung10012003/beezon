@@ -15,15 +15,23 @@ export class OrdersService {
   }
 
   async create(createOrderDto: CreateOrderDto) {
+    //console.log(createOrderDto);
     const products = await Promise.all(createOrderDto.products.map(async product => {
       const productDoc = await this.productModel.findById(product.product);
       return {product: productDoc, quantity: product.quantity};
     }));
-    return this.orderModel.create({products, user: createOrderDto.user});
+    try {
+      const order = await this.orderModel.create({products, user: createOrderDto.user, seller: createOrderDto.seller});
+      console.log(order);
+      return order;
+    } catch (e) {
+      console.log(e);
+    }
   }
 
   async find(query?: {
     user?: string;
+    seller?: string;
     status?: string;
     order?: 'asc' | 'desc';
     orderField?: string;
@@ -33,6 +41,9 @@ export class OrdersService {
     const queryBuilder = this.orderModel.find();
     if (query?.user) {
       queryBuilder.where('user', query.user);
+    }
+    if (query?.seller) {
+      queryBuilder.where('seller', query.seller);
     }
     if (query?.status) {
       queryBuilder.where('status', query.status);

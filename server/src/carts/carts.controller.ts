@@ -21,12 +21,22 @@ export class CartsController {
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.cartsService.findOne(+id);
+    return this.cartsService.findOne(id);
+  }
+
+  @Get('user/:userId')
+  findUserCart(@Param('userId') userId: string) {
+    return this.cartsService.findUserCart(userId);
   }
 
   @Patch(':id/add')
   addProduct(@Param('id') id: string, @Body() product: { id: string, quantity: number }) {
     return this.cartsService.addProduct(id, product);
+  }
+
+  @Patch('user/:userId/add')
+  addProductToUserCart(@Param('userId') userId: string, @Body() product: { id: string, quantity: number }) {
+    return this.cartsService.addProductByUser(userId, product);
   }
 
   @Patch(':id/remove')

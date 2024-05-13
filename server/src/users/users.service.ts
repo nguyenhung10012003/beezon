@@ -50,7 +50,7 @@ export class UsersService {
     return queryBuilder.exec();
   }
 
-  async findOne(id: number) {
+  async findOne(id: string) {
     return this.userModel.findById(id);
   }
 
