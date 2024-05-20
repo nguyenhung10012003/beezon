@@ -39,4 +39,9 @@ export class OrdersController {
   remove(@Param('id') id: string) {
     return this.ordersService.remove(id);
   }
+
+  @Post('checkout/:userId')
+  checkout(@Param('userId') userId: string) {
+    return this.ordersService.createByCart(userId);
+  }
 }

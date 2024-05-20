@@ -28,11 +28,12 @@ export class CartsService {
   }
 
   async findUserCart(userId: string) {
-    const card = await this.cartModel.findOne({user: userId});
-    if (!card) {
+    const cart = await this.cartModel.findOne({user: userId});
+    console.log(cart);
+    if (!cart) {
       return this.create({user: userId});
     }
-    const products = await Promise.all(card.products.map(async p => {
+    const products = await Promise.all(cart.products.map(async p => {
       return {
         quantity: p.quantity,
         product: await this.productModel.findById(p.productId)
@@ -40,9 +41,9 @@ export class CartsService {
     }));
 
     return {
-      count: card.count,
-      user: card.user,
-      _id: card._id,
+      count: cart.count,
+      user: cart.user,
+      _id: cart._id,
       products
     }
   }

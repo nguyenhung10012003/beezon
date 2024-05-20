@@ -5,12 +5,14 @@ import {InjectModel} from "@nestjs/mongoose";
 import {Model} from "mongoose";
 import {Order} from "../schemas/orders.schema";
 import {Product} from "../schemas/products.schema";
+import {Cart} from "../schemas/carts.schema";
 
 @Injectable()
 export class OrdersService {
   constructor(
     @InjectModel(Order.name) private orderModel: Model<Order>,
-    @InjectModel('Product') private productModel: Model<Product>,
+    @InjectModel(Product.name) private productModel: Model<Product>,
+    @InjectModel(Cart.name) private cartModel: Model<Cart>,
   ) {
   }
 
@@ -24,6 +26,26 @@ export class OrdersService {
       const order = await this.orderModel.create({products, user: createOrderDto.user, seller: createOrderDto.seller});
       console.log(order);
       return order;
+    } catch (e) {
+      console.log(e);
+    }
+  }
+
+  async createByCart(userId: string) {
+    const cart = await this.cartModel.findOne({user: userId});
+    if (!cart) {
+      throw new Error('Cart not found');
+    }
+    const products = await Promise.all(cart.products.map(async product => {
+      const productDoc = await this.productModel.findById(product.productId);
+      return {product: productDoc, quantity: product.quantity};
+    }));
+    try {
+      const orders = await Promise.all(products.map(async product => {
+        return await this.orderModel.create({products: [product], user: userId, seller: product.product.owner});
+      }))
+      await this.cartModel.findOneAndUpdate({user: userId}, {products: []});
+      return orders;
     } catch (e) {
       console.log(e);
     }

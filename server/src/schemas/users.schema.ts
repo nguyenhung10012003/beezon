@@ -21,6 +21,9 @@ export class User {
   role: UserRole;
 
   @Prop()
+  image: string;
+
+  @Prop()
   createdAt: Date;
 
   @Prop()

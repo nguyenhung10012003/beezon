@@ -21,6 +21,7 @@ export class Cart {
 
 export const CartSchema = SchemaFactory.createForClass(Cart);
 
-CartSchema.post('save', async function (doc: Cart) {
+CartSchema.post('save', async function (doc: Cart, next) {
   doc.count = doc.products.reduce((acc, curr) => acc + curr.quantity, 0);
-})
+  next();
+});

@@ -15,6 +15,7 @@ export class ProductsService {
   }
 
   async create(product: ProductDto) {
+
     return this.productModel.create(product);
   }
 

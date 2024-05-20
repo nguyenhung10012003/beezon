@@ -26,6 +26,7 @@ export class UsersService {
 
   async find(query?: {
     name?: string,
+    role?: string,
     order?: 'asc' | 'desc',
     orderField?: string,
     limit?: number,
@@ -37,6 +38,9 @@ export class UsersService {
     }
     if (query.name) {
       queryBuilder.find({name: {$regex: query.name, $options: 'i'}})
+    }
+    if (query.role) {
+      queryBuilder.find({type: query.role})
     }
     if (query.order && query.orderField) {
       queryBuilder.sort({[query.orderField]: query.order === 'asc' ? 1 : -1});
