@@ -28,6 +28,9 @@ export class OrdersService {
         products,
         user: createOrderDto.user,
         seller: createOrderDto.seller,
+        total: products.reduce((acc, product) => {
+          return acc + product.product.price * product.quantity;
+        }, 0),
       });
       console.log(order);
       return order;
