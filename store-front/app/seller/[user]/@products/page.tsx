@@ -1,4 +1,5 @@
 "use client";
+import ProductList from "@/components/ProductList";
 import api from "@/config/api";
 import useSWR from "swr";
 
@@ -11,6 +12,15 @@ export default function SellerProducts({
     user: string;
   };
 }) {
-  const { data, error, isLoading } = useSWR(`/user/${params.user}`, fetcher);
-  return <></>;
+  const { data, error, isLoading } = useSWR(
+    `/product?owner=${params.user}`,
+    fetcher
+  );
+  if (isLoading) return <div>Loading...</div>;
+  return (
+    <>
+      <h2 className="font-bold text-lg">Products</h2>
+      <ProductList products={data} />
+    </>
+  );
 }

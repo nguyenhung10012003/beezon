@@ -1,8 +1,8 @@
 "use client";
-import { useSearchParams } from "next/navigation";
-import api from "@/config/api";
-import useSWR from "swr";
 import ProductList from "@/components/ProductList";
+import api from "@/config/api";
+import { useSearchParams } from "next/navigation";
+import useSWR from "swr";
 
 const fetcher = (url: string) => api.get(url).then((res: any) => res.data);
 export default function ProductSearch() {
@@ -12,7 +12,7 @@ export default function ProductSearch() {
     `product?name=${key || ""}`,
     fetcher
   );
-  if (isLoading) return <div>Loading...</div>;
+  if (isLoading) return <div></div>;
   return (
     <>
       <h2 className="text-xl font-bold">Products</h2>

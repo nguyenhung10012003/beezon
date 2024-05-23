@@ -13,7 +13,7 @@ export default function SellerSearch() {
     `/user?name=${key || ""}&limit=10`,
     fetcher
   );
-  if (isLoading) return <div>Loading...</div>;
+  if (isLoading) return <div></div>;
   return (
     <>
       <h2 className="font-bold text-lg">Suppliers</h2>

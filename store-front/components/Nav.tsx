@@ -25,30 +25,25 @@ const navigation = {
       featured: [
         {
           name: "New Arrivals",
-          href: "#",
+          href: "/search",
           imageSrc:
-            "https://tailwindui.com/img/ecommerce-images/mega-menu-category-01.jpg",
+            "https://wp.buildingmaterials.co.uk/wp-content/uploads/2022/11/shutterstock_619349516-scaled.jpg",
           imageAlt:
             "Models sitting back to back, wearing Basic Tee in black and bone.",
         },
       ],
       sections: [
         {
-          id: "clothing",
-          name: "Clothing",
+          id: "Modern",
+          name: "Modern",
           items: [
             { name: "Tops", href: "#" },
             { name: "Browse All", href: "#" },
           ],
         },
         {
-          id: "accessories",
-          name: "Accessories",
-          items: [],
-        },
-        {
-          id: "brands",
-          name: "Brands",
+          id: "Classic",
+          name: "Classic",
           items: [],
         },
       ],
@@ -59,30 +54,25 @@ const navigation = {
       featured: [
         {
           name: "New Arrivals",
-          href: "#",
+          href: "/search",
           imageSrc:
-            "https://tailwindui.com/img/ecommerce-images/product-page-04-detail-product-shot-01.jpg",
+            "https://5.imimg.com/data5/SELLER/Default/2020/11/JF/YR/WR/12291864/iti-mechanical-hand-tools.png",
           imageAlt:
             "Drawstring top with elastic loop closure and textured interior padding.",
         },
       ],
       sections: [
         {
-          id: "clothing",
-          name: "Clothing",
+          id: "Big",
+          name: "Big",
           items: [
             { name: "Tops", href: "#" },
             { name: "Browse All", href: "#" },
           ],
         },
         {
-          id: "accessories",
-          name: "Accessories",
-          items: [],
-        },
-        {
-          id: "brands",
-          name: "Brands",
+          id: "Small",
+          name: "Small",
           items: [],
         },
       ],
