@@ -15,7 +15,7 @@ const categories = [
 export default function Categories() {
   return (
     <div className="flex gap-7 my-3">
-      {categories.map((category, index: Number) => (
+      {categories.map((category, index) => (
         <div className="flex flex-col items-center gap-5 border-2 border-gray-200 rounded-lg px-3 py-5" key={index}>
           <a href={category.href}>
             <img
