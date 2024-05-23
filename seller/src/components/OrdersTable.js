@@ -1,25 +1,25 @@
-import React, {useEffect, useState} from "react";
 import {
-    Badge,
-    Button,
-    Pagination,
-    Table,
-    TableBody,
-    TableCell,
-    TableContainer,
-    TableFooter,
-    TableHeader,
-    TableRow,
+  Badge,
+  Button,
+  Pagination,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableFooter,
+  TableHeader,
+  TableRow,
 } from "@windmill/react-ui";
-import {useAuth} from "../context/AuthContext";
+import React, { useEffect, useState } from "react";
 import axiosClient from "../api";
+import { useAuth } from "../context/AuthContext";
 import User from "./User";
 
-const OrdersTable = ({resultsPerPage, filter}) => {
+const OrdersTable = ({ resultsPerPage, filter }) => {
   const [toggle, setToggle] = useState(false);
   const [page, setPage] = useState(1);
   const [data, setData] = useState([]);
-  const {user} = useAuth();
+  const { user } = useAuth();
   useEffect(() => {
     const fetchData = () => {
       axiosClient.get(`/order?seller=${user}`).then((response) => {
@@ -36,7 +36,6 @@ const OrdersTable = ({resultsPerPage, filter}) => {
   function onPageChange(p) {
     setPage(p);
   }
-
 
   // on page change, load new sliced data
   // here you would make another server request for new data
@@ -80,9 +79,7 @@ const OrdersTable = ({resultsPerPage, filter}) => {
 
     // if filters dosent applied
     if (filter === "all" || !filter) {
-      setData(
-        data.slice((page - 1) * resultsPerPage, page * resultsPerPage)
-      );
+      setData(data.slice((page - 1) * resultsPerPage, page * resultsPerPage));
     }
   }, [page, resultsPerPage, filter]);
   const handleConfirm = async (id) => {
@@ -90,7 +87,7 @@ const OrdersTable = ({resultsPerPage, filter}) => {
       status: "CONFIRMED",
     });
     setToggle(!toggle);
-  }
+  };
   return (
     <div>
       {/* Table */}
@@ -108,49 +105,51 @@ const OrdersTable = ({resultsPerPage, filter}) => {
           </TableHeader>
           <TableBody>
             {data.map((d, i) => {
-
-              return <TableRow key={i}>
-                <TableCell>
-                  <div className="flex items-center text-sm">
-                    <div>
-                      <User id={d.user}></User>
+              return (
+                <TableRow key={i}>
+                  <TableCell>
+                    <div className="flex items-center text-sm">
+                      <div>
+                        <User id={d.user}></User>
+                      </div>
                     </div>
-                  </div>
-                </TableCell>
-                <TableCell>
-                                    <span className="text-sm">{
-                                      d.products.map((product, index) => (
-                                        <span key={index} className="font-semibold">
-                                                {product.product.name} x {product.quantity}
-                                            </span>
-                                      ))
-                                    }</span>
-                </TableCell>
-                <TableCell>
-                  <span className="text-sm">$ {d.total}</span>
-                </TableCell>
-                <TableCell>
-                  <Badge
-                    type={
-                      d.status === "CANCELLED"
-                        ? "danger"
-                        : "success"
-                    }
-                  >
-                    {d.status}
-                  </Badge>
-                </TableCell>
-                <TableCell>
-                  <span className="text-sm">
-                    {new Date(d.createdAt).toLocaleDateString()}
-                  </span>
-                </TableCell>
-                <TableCell>
-                  {d.status === "PENDING" ?
-                    <Button onClick={() => handleConfirm(d['_id'])}>Confirm</Button> :
-                    <Button disabled>Confirmed</Button>}
-                </TableCell>
-              </TableRow>
+                  </TableCell>
+                  <TableCell>
+                    <span className="text-sm">
+                      {d.products
+                        .map(
+                          (product, index) =>
+                            `${product.product.name} x ${product.quantity}`
+                        )
+                        .join(", ")}
+                    </span>
+                  </TableCell>
+                  <TableCell>
+                    <span className="text-sm">$ {d.total}</span>
+                  </TableCell>
+                  <TableCell>
+                    <Badge
+                      type={d.status === "CANCELLED" ? "danger" : "success"}
+                    >
+                      {d.status}
+                    </Badge>
+                  </TableCell>
+                  <TableCell>
+                    <span className="text-sm">
+                      {new Date(d.createdAt).toLocaleDateString()}
+                    </span>
+                  </TableCell>
+                  <TableCell>
+                    {d.status === "PENDING" ? (
+                      <Button onClick={() => handleConfirm(d["_id"])}>
+                        Confirm
+                      </Button>
+                    ) : (
+                      <Button disabled>Confirmed</Button>
+                    )}
+                  </TableCell>
+                </TableRow>
+              );
             })}
           </TableBody>
         </Table>

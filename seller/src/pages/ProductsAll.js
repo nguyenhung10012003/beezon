@@ -1,36 +1,43 @@
-import React, {useEffect, useState} from "react";
-import PageTitle from "../components/Typography/PageTitle";
-import {Link, NavLink} from "react-router-dom";
 import {
-    Avatar,
-    Badge,
-    Button,
-    Card,
-    CardBody,
-    Label,
-    Modal,
-    ModalBody,
-    ModalFooter,
-    ModalHeader,
-    Pagination,
-    Select,
-    Table,
-    TableBody,
-    TableCell,
-    TableContainer,
-    TableFooter,
-    TableHeader,
-    TableRow,
+  Bars4Icon,
+  EyeIcon,
+  HomeIcon,
+  PencilIcon,
+  Squares2X2Icon,
+  TrashIcon,
+} from "@heroicons/react/20/solid";
+import {
+  Avatar,
+  Badge,
+  Button,
+  Card,
+  CardBody,
+  Label,
+  Modal,
+  ModalBody,
+  ModalFooter,
+  ModalHeader,
+  Pagination,
+  Select,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableFooter,
+  TableHeader,
+  TableRow,
 } from "@windmill/react-ui";
-import response from "../utils/demo/productData";
-import {genRating} from "../utils/genarateRating";
-import {Bars4Icon, EyeIcon, HomeIcon, PencilIcon, Squares2X2Icon, TrashIcon} from "@heroicons/react/20/solid";
+import React, { useEffect, useState } from "react";
+import { Link, NavLink } from "react-router-dom";
 import axiosClient from "../api";
-import {useAuth} from "../context/AuthContext";
+import PageTitle from "../components/Typography/PageTitle";
+import { useAuth } from "../context/AuthContext";
+import response from "../utils/demo/productData";
+import { genRating } from "../utils/genarateRating";
 
 const ProductsAll = () => {
   const [view, setView] = useState("grid");
-  const {user} = useAuth();
+  const { user } = useAuth();
 
   // Table and grid data handlling
   const [page, setPage] = useState(1);
@@ -47,22 +54,32 @@ const ProductsAll = () => {
 
   // on page change, load new sliced data
   // here you would make another server request for new data
-  useEffect(() => {
-    axiosClient.get(`product?owner=${user}`).then((response) => {
-      setData(response.slice((page - 1) * resultsPerPage, page * resultsPerPage));
-    });
-  }, [page, resultsPerPage]);
-
-  // Delete action model
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedDeleteProduct, setSelectedDeleteProduct] = useState(null);
 
+  useEffect(() => {
+    axiosClient.get(`product?owner=${user}`).then((response) => {
+      setData(
+        response.slice((page - 1) * resultsPerPage, page * resultsPerPage)
+      );
+    });
+  }, [page, resultsPerPage, selectedDeleteProduct]);
+
+  // Delete action model
+
   async function openModal(productId) {
-    let product = await data.filter((product) => product.id === productId)[0];
     // console.log(product);
-    setSelectedDeleteProduct(product);
+    setSelectedDeleteProduct(productId);
     setIsModalOpen(true);
   }
+
+  const handleDelete = () => {
+    axiosClient.delete(`product/${selectedDeleteProduct}`).then((response) => {
+      //console.log(response, selectedDeleteProduct);
+      setIsModalOpen(false);
+      setSelectedDeleteProduct(null);
+    });
+  };
 
   function closeModal() {
     setIsModalOpen(false);
@@ -85,7 +102,7 @@ const ProductsAll = () => {
       {/* Breadcum */}
       <div className="flex text-gray-800 dark:text-gray-300">
         <div className="flex items-center text-purple-600">
-          <HomeIcon className="h-5 w-5"/>
+          <HomeIcon className="h-5 w-5" />
           <NavLink exact to="/app/dashboard" className="mx-2">
             Dashboard
           </NavLink>
@@ -113,16 +130,14 @@ const ProductsAll = () => {
 
               <Label className="mr-8">
                 {/* <!-- focus-within sets the color for the icon when input is focused --> */}
-                <div
-                  className="relative text-gray-500 focus-within:text-purple-600 dark:focus-within:text-purple-400">
+                <div className="relative text-gray-500 focus-within:text-purple-600 dark:focus-within:text-purple-400">
                   <input
                     className="py-3 pr-5 text-sm text-black dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:focus:shadow-outline-gray form-input"
                     placeholder="Number of Results"
                     value={resultsPerPage}
                     onChange={(e) => setResultsPerPage(e.target.value)}
                   />
-                  <div
-                    className="absolute inset-y-0 right-0 flex items-center mr-3 pointer-events-none">
+                  <div className="absolute inset-y-0 right-0 flex items-center mr-3 pointer-events-none">
                     {/* <SearchIcon className="w-5 h-5" aria-hidden="true" /> */}
                     Results on {`${view}`}
                   </div>
@@ -145,26 +160,18 @@ const ProductsAll = () => {
       <Modal isOpen={isModalOpen} onClose={closeModal}>
         <ModalHeader className="flex items-center">
           {/* <div className="flex items-center"> */}
-          <TrashIcon className="w-6 h-6 mr-3"/>
+          <TrashIcon className="w-6 h-6 mr-3" />
           Delete Product
           {/* </div> */}
         </ModalHeader>
-        <ModalBody>
-          Make sure you want to delete product{" "}
-          {selectedDeleteProduct && `"${selectedDeleteProduct.name}"`}
-        </ModalBody>
+        <ModalBody>Make sure you want to delete product </ModalBody>
         <ModalFooter>
-          {/* I don't like this approach. Consider passing a prop to ModalFooter
-           * that if present, would duplicate the buttons in a way similar to this.
-           * Or, maybe find some way to pass something like size="large md:regular"
-           * to Button
-           */}
           <div className="hidden sm:block">
             <Button layout="outline" onClick={closeModal}>
               Cancel
             </Button>
           </div>
-          <div className="hidden sm:block">
+          <div className="hidden sm:block" onClick={handleDelete}>
             <Button>Delete</Button>
           </div>
           <div className="block w-full sm:hidden">
@@ -173,7 +180,7 @@ const ProductsAll = () => {
             </Button>
           </div>
           <div className="block w-full sm:hidden">
-            <Button block size="large">
+            <Button block size="large" onClick={handleDelete}>
               Delete
             </Button>
           </div>
@@ -212,7 +219,9 @@ const ProductsAll = () => {
                     <TableCell className="text-sm">
                       {genRating(product.rating || 5, 0, 5)}
                     </TableCell>
-                    <TableCell className="text-sm">{product.quantity}</TableCell>
+                    <TableCell className="text-sm">
+                      {product.quantity}
+                    </TableCell>
                     <TableCell className="text-sm">{product.price}</TableCell>
                     <TableCell>
                       <div className="flex">
@@ -319,7 +328,7 @@ const ProductsAll = () => {
                     </CardBody>
                   </Card>
                 </div>
-              )
+              );
             })}
           </div>
 

@@ -1,13 +1,25 @@
+import {
+  ArchiveBoxIcon,
+  BarsArrowUpIcon,
+  HomeIcon,
+} from "@heroicons/react/20/solid";
+import {
+  Button,
+  Card,
+  CardBody,
+  Input,
+  Label,
+  Select,
+  Textarea,
+} from "@windmill/react-ui";
 import React from "react";
-import {NavLink} from "react-router-dom";
-import PageTitle from "../components/Typography/PageTitle";
-import {Button, Card, CardBody, Input, Label, Select, Textarea,} from "@windmill/react-ui";
-import {ArchiveBoxIcon, BarsArrowUpIcon, HomeIcon} from "@heroicons/react/20/solid";
+import { NavLink } from "react-router-dom";
 import axiosClient from "../api";
-import {useAuth} from "../context/AuthContext";
-import {minifyImage} from "../utils/minifyImage";
+import PageTitle from "../components/Typography/PageTitle";
+import { useAuth } from "../context/AuthContext";
+import { minifyImage } from "../utils/minifyImage";
 
-const FormTitle = ({children}) => {
+const FormTitle = ({ children }) => {
   return (
     <h2 className="mb-3 text-sm font-semibold text-gray-600 dark:text-gray-300">
       {children}
@@ -17,11 +29,11 @@ const FormTitle = ({children}) => {
 
 const AddProduct = () => {
   const [categories, setCategories] = React.useState();
-  const {user} = useAuth();
+  const { user } = useAuth();
   React.useEffect(() => {
-    axiosClient.get('category').then((res) => {
+    axiosClient.get("category").then((res) => {
       setCategories(res);
-    })
+    });
   }, []);
   const nameRef = React.useRef();
   const priceRef = React.useRef();
@@ -45,19 +57,29 @@ const AddProduct = () => {
           categories: [categoryRef.current.value],
           image: await minifyImage(base64),
           owner: user,
-        }
+        };
         console.log(formData);
-        axiosClient.post('product', formData).then((res) => {
-          console.log(res);
-          //if (res) window.location.reload();
-        }).catch((err) => {
-          console.log(err);
-        })
-      }
+        axiosClient
+          .post("product", formData)
+          .then((res) => {
+            console.log(res);
+            if (res) window.location.reload();
+          })
+          .catch((err) => {
+            console.log(err);
+          });
+      };
       reader.readAsDataURL(imageRef.current.files[0]);
+      axiosClient
+        .patch(`user/${user}`, { role: "seller" })
+        .then((res) => {
+          console.log(res);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
     }
-
-  }
+  };
   return (
     <div>
       <PageTitle>Add New Product</PageTitle>
@@ -65,7 +87,7 @@ const AddProduct = () => {
       {/* Breadcum */}
       <div className="flex text-gray-800 dark:text-gray-300">
         <div className="flex items-center text-purple-600">
-          <HomeIcon className="w-5 h-5" aria-hidden="true"/>
+          <HomeIcon className="w-5 h-5" aria-hidden="true" />
           <NavLink exact to="/app/dashboard" className="mx-2">
             Dashboard
           </NavLink>
@@ -86,12 +108,20 @@ const AddProduct = () => {
 
             <FormTitle>Product Name</FormTitle>
             <Label>
-              <Input className="mb-4" placeholder="Type product name here" ref={nameRef}/>
+              <Input
+                className="mb-4"
+                placeholder="Type product name here"
+                ref={nameRef}
+              />
             </Label>
 
             <FormTitle>Product Price</FormTitle>
             <Label>
-              <Input className="mb-4" placeholder="Enter product price here" ref={priceRef}/>
+              <Input
+                className="mb-4"
+                placeholder="Enter product price here"
+                ref={priceRef}
+              />
             </Label>
 
             <FormTitle>Description</FormTitle>
@@ -128,7 +158,12 @@ const AddProduct = () => {
         <Card className="h-48">
           <CardBody>
             <div className="flex mb-8">
-              <Button layout="primary" className="mr-3" iconLeft={BarsArrowUpIcon} onClick={handleSubmit}>
+              <Button
+                layout="primary"
+                className="mr-3"
+                iconLeft={BarsArrowUpIcon}
+                onClick={handleSubmit}
+              >
                 Publish
               </Button>
               <Button layout="link" iconLeft={ArchiveBoxIcon}>

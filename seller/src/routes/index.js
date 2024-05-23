@@ -1,4 +1,4 @@
-import { lazy } from "react";
+import {lazy} from "react";
 
 // use lazy for better code splitting, a.k.a. load faster
 const Dashboard = lazy(() => import("../pages/Dashboard"));
@@ -53,7 +53,7 @@ const routes = [
     component: Chats,
   },
   {
-    path: "/manage-profile",
+    path: "/profile",
     component: Profile,
   },
   {
