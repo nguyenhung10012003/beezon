@@ -1,10 +1,10 @@
 'use client';
 import api from "@/config/api";
 import useSWR from "swr";
-import Nav from "@/components/nav";
+import Nav from "@/components/Nav";
 import {useAuth} from "@/hooks/auth-context";
 import {useState} from "react";
-import QuantityChoice from "@/components/quantityChoice";
+import QuantityChoice from "@/components/QuantityChoice";
 
 const fetcher = (url: string) => api.get(url).then((res: any) => res.data);
 export default function ProductDetail({params}: {

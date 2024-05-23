@@ -1,9 +1,10 @@
 'use client';
 
-import Nav from "@/components/nav";
-import ProductCard from "@/components/cards/productCard";
+import Nav from "@/components/Nav";
 import useSWR from "swr";
 import api from "@/config/api";
+import ProductList from "@/components/ProductList";
+import CTA from "@/components/CTA";
 
 export default function Home() {
   const fetcher = (url: string) => api.get(url).then((res: any) => res.data);
@@ -14,14 +15,9 @@ export default function Home() {
       <Nav></Nav>
       <div className="mx-20">
         <h1 className="mt-5 font-bold text-3xl">New Arrival</h1>
-        <div className="flex flex-row gap-5 flex-wrap">
-          {data?.map((product: any) => {
-            return (
-              <ProductCard product={product} key={product._id}></ProductCard>
-            )
-          })}
-        </div>
+        <ProductList products={data}/>
       </div>
+      <CTA/>
     </>
   );
 }

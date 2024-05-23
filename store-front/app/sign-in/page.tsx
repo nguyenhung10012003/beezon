@@ -1,36 +1,36 @@
-'use client';
-import {useState} from "react";
-import {useAuth} from "@/hooks/auth-context";
-import {useRouter} from "next/navigation";
-import {toast} from "react-toastify";
+"use client";
+import { useAuth } from "@/hooks/auth-context";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { toast } from "react-toastify";
 
 export default function SignIn() {
   const [email, setEmail] = useState<string>();
   const [password, setPassword] = useState<string>();
-  const {login} = useAuth();
+  const { login } = useAuth();
   const router = useRouter();
   const handleLogin = async () => {
     try {
       if (!email || !password) {
-        toast.error('Please enter your email and password');
+        toast.error("Please enter your email and password");
         return;
       } else {
         const result = await login({
           username: email,
           password: password,
         });
-        
+
         if (result) {
-          toast.success('Welcome back!');
-          router.push('/');
+          toast.success("Welcome back!");
+          router.push("/");
         } else {
-          toast.error('Uh oh! Some things went wrong!');
+          toast.error("Uh oh! Some things went wrong!");
         }
       }
     } catch (e: any) {
       toast.error(e.message);
     }
-  }
+  };
 
   return (
     <>
@@ -49,13 +49,17 @@ export default function SignIn() {
         <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
           <div className="space-y-6">
             <div>
-              <label htmlFor="email" className="block text-sm font-medium leading-6 text-gray-900">
+              <label
+                htmlFor="email"
+                className="block text-sm font-medium leading-6 text-gray-900"
+              >
                 Email address
               </label>
               <div className="mt-2">
                 <input
                   onChange={(e) => setEmail(e.target.value)}
                   id="email"
+                  value={email}
                   name="email"
                   type="email"
                   autoComplete="email"
@@ -67,11 +71,17 @@ export default function SignIn() {
 
             <div>
               <div className="flex items-center justify-between">
-                <label htmlFor="password" className="block text-sm font-medium leading-6 text-gray-900">
+                <label
+                  htmlFor="password"
+                  className="block text-sm font-medium leading-6 text-gray-900"
+                >
                   Password
                 </label>
                 <div className="text-sm">
-                  <a href="#" className="font-semibold text-indigo-600 hover:text-indigo-500">
+                  <a
+                    href="#"
+                    className="font-semibold text-indigo-600 hover:text-indigo-500"
+                  >
                     Forgot password?
                   </a>
                 </div>
@@ -80,6 +90,7 @@ export default function SignIn() {
                 <input
                   onChange={(e) => setPassword(e.target.value)}
                   id="password"
+                  value={password}
                   name="password"
                   type="password"
                   autoComplete="current-password"
@@ -100,13 +111,16 @@ export default function SignIn() {
           </div>
 
           <p className="mt-10 text-center text-sm text-gray-500">
-            Not a member?{' '}
-            <a href="/sign-up" className="font-semibold leading-6 text-indigo-600 hover:text-indigo-500">
+            Not a member?{" "}
+            <a
+              href="/sign-up"
+              className="font-semibold leading-6 text-indigo-600 hover:text-indigo-500"
+            >
               Sign up now
             </a>
           </p>
         </div>
       </div>
     </>
-  )
+  );
 }

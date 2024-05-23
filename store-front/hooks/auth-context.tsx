@@ -28,13 +28,13 @@ export const AuthProvider = ({children}: { children: ReactNode }) => {
     }
   };
 
-  const logout = () => {
+  const signOut = () => {
     deleteCookie("user");
     setUser(null);
   };
 
   return (
-    <AuthContext.Provider value={{user, login, logout}}>
+    <AuthContext.Provider value={{user, login, signOut}}>
       {children}
     </AuthContext.Provider>
   );
