@@ -39,8 +39,8 @@ export class ProductsController {
   }
 
   @Put("/decrease/:id")
-  async decreaseQuantity(@Param('id') id: string) {
-    return await this.productService.decreaseQuantity(id);
+  async decreaseQuantity(@Param('id') id: string, @Query('quantity') quantity: number){
+    return await this.productService.decreaseQuantity(id, quantity);
   }
 
   @Delete(":id")

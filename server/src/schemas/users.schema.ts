@@ -20,8 +20,14 @@ export class User {
   @Prop({required: true})
   role: UserRole;
 
+  @Prop({default: 0})
+  productCount: number;
+
   @Prop()
   image: string;
+
+  @Prop({default: 5})
+  rating: number;
 
   @Prop()
   createdAt: Date;

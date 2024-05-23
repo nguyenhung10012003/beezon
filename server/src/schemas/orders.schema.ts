@@ -1,6 +1,6 @@
-import {Prop, Schema, SchemaFactory} from "@nestjs/mongoose";
-import {Product, ProductSchema} from "./products.schema";
-import {SchemaTypes} from "mongoose";
+import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
+import { SchemaTypes } from "mongoose";
+import { Product, ProductSchema } from "./products.schema";
 
 enum OrderStatus {
   PENDING = 'PENDING',
@@ -50,6 +50,7 @@ OrderSchema.pre('save', function (next) {
   next();
 });
 
-OrderSchema.post('save', function (doc) {
+OrderSchema.post('save', function (doc, next) {
   this.total = doc.products.reduce((acc, product) => acc + product.product.price * product.quantity, 0);
+  next();
 });

@@ -1,12 +1,20 @@
-import {Body, Controller, Delete, Get, Param, Patch, Post, Query} from '@nestjs/common';
-import {UsersService} from './users.service';
-import {CreateUserDto} from '../dto/create-user.dto';
-import {UpdateUserDto} from '../dto/update-user.dto';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Patch,
+  Post,
+  Query,
+} from '@nestjs/common';
+import { CreateUserDto } from '../dto/create-user.dto';
+import { UpdateUserDto } from '../dto/update-user.dto';
+import { UsersService } from './users.service';
 
 @Controller('user')
 export class UsersController {
-  constructor(private readonly usersService: UsersService) {
-  }
+  constructor(private readonly usersService: UsersService) {}
 
   @Post()
   create(@Body() createUserDto: CreateUserDto) {
@@ -14,12 +22,15 @@ export class UsersController {
   }
 
   @Get()
-  find(@Query() query: {
-    name?: string,
-    order?: 'asc' | 'desc',
-    limit?: number,
-    offset?: number,
-  }) {
+  find(
+    @Query()
+    query: {
+      name?: string;
+      order?: 'asc' | 'desc';
+      limit?: number;
+      offset?: number;
+    },
+  ) {
     return this.usersService.find(query);
   }
 
